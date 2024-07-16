@@ -3,24 +3,21 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"icook/src/recipes"
 	"log"
 	"net/http"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 
 	//链接SQLite数据库
-	db, err := sql.Open("sqlite", "./recipes.db")
+	db, err := sql.Open("sqlite3", "./recipes.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
-
-	//创建数据库的表
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS recipes (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		recipe_name TEXT,
-	)`)
 
 	// 注册根路径处理函数
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

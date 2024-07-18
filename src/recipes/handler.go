@@ -44,12 +44,12 @@ func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	var recipes []Recipe
 
 	for rows.Next() {
-		var recipe Recipe
+		var recipe Recipe //每次迭代中都会创建一个新的 Recipe 变量
 		if err := rows.Scan(&recipe.ID, &recipe.Name); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		recipes = append(recipes, recipe)
+		recipes = append(recipes, recipe) //将该变量追加到 recipes 切片中
 	}
 
 	respBody := RespBody{Recipes: recipes}

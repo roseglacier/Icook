@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"icook/src/recipes"
+	"icook/src/routes"
+
 	"log"
 	"net/http"
 
@@ -19,23 +21,11 @@ func main() {
 	}
 	defer db.Close()
 
-	// 注册根路径处理函数
-	rootHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			recipes.GetEveryDayRecipes(db, w, r)
-		case http.MethodPost:
-			recipes.CreateRecipe(db, w, r)
-		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
-		}
-	})
-	// 创建新的路由器
-	mux := http.NewServeMux()
-	mux.Handle("/", rootHandler)
+	// 创建路由器
+	r := routes.NewRouter(db)
 
 	// 应用 CORS 中间件
-	handlerWithCors := recipes.Cors(mux)
+	handlerWithCors := recipes.Cors(r)
 
 	// 启动服务器，监听 8080 端口
 	fmt.Println("Starting server at :8080")
@@ -66,8 +56,7 @@ func main() {
 // 	// 创建表
 // 	createTableSQL := `CREATE TABLE IF NOT EXISTS recipes (
 //         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-//         name TEXT,
-//         ingredients TEXT
+//         name TEXT
 //     );`
 // 	_, err = db.Exec(createTableSQL)
 // 	if err != nil {
@@ -76,12 +65,16 @@ func main() {
 
 // 	// 批量插入数据
 // 	recipes := []struct {
-// 		name        string
-// 		ingredients string
+// 		name string
 // 	}{
-// 		{"Pancake", "Flour, Eggs, Milk"},
-// 		{"Scrambled Eggs", "Eggs, Butter, Salt"},
-// 		{"Salad", "Lettuce, Tomato, Cucumber"},
+// 		{"披萨"},
+// 		{"蛋炒饭"},
+// 		{"沙拉"},
+// 		{"肉沫茄子"},
+// 		{"紫菜蛋汤"},
+// 		{"青椒肉丝"},
+// 		{"孜然土豆片"},
+// 		{"土豆肉丝"},
 // 	}
 
 // 	tx, err := db.Begin()
@@ -89,14 +82,14 @@ func main() {
 // 		log.Fatal(err)
 // 	}
 
-// 	stmt, err := tx.Prepare("INSERT INTO recipes (name, ingredients) VALUES (?, ?)")
+// 	stmt, err := tx.Prepare("INSERT INTO recipes (name) VALUES (?)")
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
 // 	defer stmt.Close()
 
 // 	for _, recipe := range recipes {
-// 		_, err = stmt.Exec(recipe.name, recipe.ingredients)
+// 		_, err = stmt.Exec(recipe.name)
 // 		if err != nil {
 // 			tx.Rollback()
 // 			log.Fatal(err)
@@ -109,7 +102,7 @@ func main() {
 // 	}
 
 // 	// 查询数据
-// 	rows, err := db.Query("SELECT id, name, ingredients FROM recipes")
+// 	rows, err := db.Query("SELECT id, name FROM recipes")
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
@@ -118,8 +111,8 @@ func main() {
 // 	// 打印查询结果
 // 	for rows.Next() {
 // 		var id int
-// 		var name, ingredients string
-// 		err = rows.Scan(&id, &name, &ingredients)
+// 		var name string
+// 		err = rows.Scan(&id, &name)
 // 		if err != nil {
 // 			log.Fatal(err)
 // 		}

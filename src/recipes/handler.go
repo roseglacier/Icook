@@ -7,8 +7,10 @@ import (
 )
 
 type Recipe struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	CoverImage string `json:"cover_image"`
+	VideoLink  string `json:"video_link"`
 }
 
 type RespBody struct {
@@ -34,7 +36,7 @@ func Cors(next http.Handler) http.Handler {
 
 // 《GET》，从数据库里随机推荐每天的推荐食谱
 func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id , name FROM recipes ORDER BY RAND() LIMIT 3")
+	rows, err := db.Query("SELECT id , name , cover_image , video_link FROM recipes ORDER BY RAND() LIMIT 3")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -45,7 +47,7 @@ func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var recipe Recipe //每次迭代中都会创建一个新的 Recipe 变量
-		if err := rows.Scan(&recipe.ID, &recipe.Name); err != nil {
+		if err := rows.Scan(&recipe.ID, &recipe.Name, &recipe.CoverImage, &recipe.VideoLink); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -60,7 +62,7 @@ func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 // 《GET》，从数据库里随机推荐每天的推荐食谱
 func GetRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id , name FROM recipes ORDER BY RAND() LIMIT 2")
+	rows, err := db.Query("SELECT id , name ,cover_image FROM recipes ORDER BY RAND() LIMIT 2")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

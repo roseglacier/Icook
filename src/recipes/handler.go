@@ -58,6 +58,32 @@ func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(respBody)
 }
 
+// 《GET》，从数据库里随机推荐每天的推荐食谱
+func GetRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT id , name FROM recipes ORDER BY RAND() LIMIT 2")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var recipes []Recipe
+
+	for rows.Next() {
+		var recipe Recipe //每次迭代中都会创建一个新的 Recipe 变量
+		if err := rows.Scan(&recipe.ID, &recipe.Name); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		recipes = append(recipes, recipe) //将该变量追加到 recipes 切片中
+	}
+
+	respBody := RespBody{Recipes: recipes}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(respBody)
+}
+
 // 《POST》 ToDo 从前端添加菜谱到数据库
 func CreateRecipe(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 

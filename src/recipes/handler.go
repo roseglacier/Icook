@@ -34,7 +34,7 @@ func Cors(next http.Handler) http.Handler {
 
 // 《GET》，从数据库里随机推荐每天的推荐食谱
 func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id , name FROM recipes ORDER BY RANDOM() LIMIT 3")
+	rows, err := db.Query("SELECT id , name FROM recipes ORDER BY RAND() LIMIT 3")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

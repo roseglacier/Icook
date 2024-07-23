@@ -34,9 +34,10 @@ func Cors(next http.Handler) http.Handler {
 	})
 }
 
-// 《GET》，从数据库里随机推荐每天的推荐食谱
+// 《GET》，从数据库里随机推荐每天的食谱
 func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id , name , cover_image , video_link FROM recipes ORDER BY RAND() LIMIT 3")
+	query := "SELECT id , name , cover_image , video_link FROM recipes ORDER BY RAND() LIMIT 3"
+	rows, err := db.Query(query)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -60,33 +61,32 @@ func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(respBody)
 }
 
-// 《GET》，从数据库里随机推荐每天的推荐食谱
-func GetRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id , name ,cover_image FROM recipes ORDER BY RAND() LIMIT 2")
+// 《GET》，根据名字来搜索菜谱
+func GetRecipesByName(db *sql.DB, name string) ([]Recipe, error) {
+	var recipes []Recipe
+	query := "SELECT id, name, cover_image, video_link FROM recipes WHERE name LIKE ?"
+	rows, err := db.Query(query, "%"+name+"%")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return nil, err
 	}
 	defer rows.Close()
 
-	var recipes []Recipe
-
 	for rows.Next() {
-		var recipe Recipe //每次迭代中都会创建一个新的 Recipe 变量
-		if err := rows.Scan(&recipe.ID, &recipe.Name); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		var recipe Recipe
+		if err := rows.Scan(&recipe.ID, &recipe.Name, &recipe.CoverImage, &recipe.VideoLink); err != nil {
+			return nil, err
 		}
-		recipes = append(recipes, recipe) //将该变量追加到 recipes 切片中
+		recipes = append(recipes, recipe)
 	}
 
-	respBody := RespBody{Recipes: recipes}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(respBody)
+	return recipes, nil
 }
 
-// 《POST》 ToDo 从前端添加菜谱到数据库
+// 《POST》 ToDo 从前端添加数据到数据库
 func CreateRecipe(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 }

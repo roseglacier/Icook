@@ -38,7 +38,8 @@
     );
 
 2.在excel中编辑好需要的数据，保存为csv文件，再通过命令导入到数据库里去。
-    类似下方==>
+
+    - 类似下方==>
         LOAD DATA INFILE 'recipes.csv'
         INTO TABLE recipes
         FIELDS TERMINATED BY ',' 

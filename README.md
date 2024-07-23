@@ -40,6 +40,14 @@
 2.在excel中编辑好需要的数据，保存为csv文件，再通过命令导入到数据库里去。
 
     - 类似下方==>
+        -- 先禁用外键检查
+        SET foreign_key_checks = 0;
+
+        -- 删除表中的数据
+        DROP TABLE IF EXISTS recipes;
+
+        --创建表
+        -- 导入数据（确保外键表数据已存在）
         LOAD DATA INFILE 'recipes.csv'
         INTO TABLE recipes
         FIELDS TERMINATED BY ',' 
@@ -47,4 +55,7 @@
         LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (id, name, cover_image, video_link);
+        
+        -- 启用外键检查
+        SET foreign_key_checks = 1;
 

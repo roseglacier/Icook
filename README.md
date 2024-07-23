@@ -2,9 +2,11 @@
 
 ## 代码篇 （Go）
 1.GET
+
     - GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request){} //随机推荐每天的食谱
     - GetRecipesByName(db *sql.DB, name string) ([]Recipe, error) {} //根据名字来搜索菜谱
 2.POST
+
     - func CreateRecipe(db *sql.DB, w http.ResponseWriter, r *http.Request) //ToDo 从前端添加数据到数据库
 3.PUT
 4.DELETE

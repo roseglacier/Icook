@@ -52,7 +52,7 @@ func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		recipes = append(recipes, recipe) //将该变量追加到 recipes 切片中
+		recipes = append(recipes, recipe)
 	}
 
 	respBody := RespBody{Recipes: recipes}

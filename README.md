@@ -2,9 +2,11 @@
 
 ## 代码篇 （Go）
 1.GET
+
     - GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request){} //随机推荐每天的食谱
     - GetRecipesByName(db *sql.DB, name string) ([]Recipe, error) {} //根据名字来搜索菜谱
 2.POST
+
     - func CreateRecipe(db *sql.DB, w http.ResponseWriter, r *http.Request) //ToDo 从前端添加数据到数据库
 3.PUT
 4.DELETE
@@ -36,7 +38,8 @@
     );
 
 2.在excel中编辑好需要的数据，保存为csv文件，再通过命令导入到数据库里去。
-    类似下方==>
+
+    - 类似下方==>
         LOAD DATA INFILE 'recipes.csv'
         INTO TABLE recipes
         FIELDS TERMINATED BY ',' 

@@ -36,7 +36,7 @@ func Cors(next http.Handler) http.Handler {
 
 // 《GET》，从数据库里随机推荐每天的食谱
 func GetEveryDayRecipes(minhaodb *minhaodb.MinhaoDB, w http.ResponseWriter, r *http.Request) {
-	rows, err := minhaodb.QueryWrapper(getEveryDayRecipes_x3)
+	rows, err := minhaodb.QueryWrapper(QGetEveryDayRecipes_x3)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -63,7 +63,7 @@ func GetEveryDayRecipes(minhaodb *minhaodb.MinhaoDB, w http.ResponseWriter, r *h
 // 《GET》，根据名字来搜索菜谱
 func GetRecipesByName(minhaodb *minhaodb.MinhaoDB, name string) ([]Recipe, error) {
 	var recipes []Recipe
-	rows, err := minhaodb.QueryWrapper(getRecipesByName, "%"+name+"%")
+	rows, err := minhaodb.QueryWrapper(QGetRecipesByName, "%"+name+"%")
 	if err != nil {
 		return nil, err
 	}

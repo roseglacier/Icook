@@ -21,6 +21,7 @@ func NewRouter(minhaodb *minhaodb.MinhaoDB) *mux.Router {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	}).Methods(http.MethodGet)
+
 	// 《GET》--------搜索菜谱的处理函数
 	r.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
@@ -48,15 +49,6 @@ func NewRouter(minhaodb *minhaodb.MinhaoDB) *mux.Router {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	}).Methods(http.MethodGet)
-
-	// 《POST》--------创建菜谱的处理函数
-	r.HandleFunc("/createrecipe", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			service.CreateRecipe(minhaodb, w, r)
-		} else {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-		}
-	}).Methods(http.MethodPost)
 
 	return r
 }

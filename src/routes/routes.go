@@ -1,22 +1,22 @@
 package routes
 
 import (
-	"database/sql"
 	"encoding/json"
-	"icook/src/recipes"
+	"icook/src/minhaodb"
+	"icook/src/service"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func NewRouter(db *sql.DB) *mux.Router {
+func NewRouter(minhaodb *minhaodb.MinhaoDB) *mux.Router {
 	// 创建新的路由器
 	r := mux.NewRouter()
 
 	// 《GET》--------获取每日推荐菜谱的处理函数
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			recipes.GetEveryDayRecipes(db, w, r)
+			service.GetEveryDayRecipes(minhaodb, w, r)
 		} else {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -30,7 +30,7 @@ func NewRouter(db *sql.DB) *mux.Router {
 				return
 			}
 
-			recipes, err := recipes.GetRecipesByName(db, name)
+			recipes, err := service.GetRecipesByName(minhaodb, name)
 			if err != nil {
 				http.Error(w, "Failed to search recipes", http.StatusInternalServerError)
 				return
@@ -52,7 +52,7 @@ func NewRouter(db *sql.DB) *mux.Router {
 	// 《POST》--------创建菜谱的处理函数
 	r.HandleFunc("/createrecipe", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-			recipes.CreateRecipe(db, w, r)
+			service.CreateRecipe(minhaodb, w, r)
 		} else {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}

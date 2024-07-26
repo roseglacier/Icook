@@ -8,14 +8,14 @@ import (
 func main() {
 
 	//初始化DB
-	db, err := appinit.InitDB()
+	minhaoDB, err := appinit.InitDB()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer minhaoDB.Close()
 
 	//启动服务器
-	if err := appinit.StartServer(db); err != nil {
+	if err := appinit.StartServer(minhaoDB); err != nil {
 		log.Fatal(err)
 	}
 }

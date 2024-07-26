@@ -1,32 +1,28 @@
 package appinit
 
 import (
-	"database/sql"
 	"fmt"
-	"icook/src/recipes"
+	"icook/src/minhaodb"
 	"icook/src/routes"
+	"icook/src/service"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func InitDB() (*sql.DB, error) {
+func InitDB() (*minhaodb.MinhaoDB, error) {
 	dsn := "root:123@tcp(127.0.0.1:3306)/myrecipes"
-	db, err := sql.Open("mysql", dsn)
+	minhaodb, err := minhaodb.NewMinhaoDB(dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
-	}
-
-	return db, nil
+	return minhaodb, nil
 }
 
-func StartServer(db *sql.DB) error {
-	r := routes.NewRouter(db)          // 创建路由器
-	handlerWithCors := recipes.Cors(r) // 应用 CORS 中间件
+func StartServer(minhaodb *minhaodb.MinhaoDB) error {
+	r := routes.NewRouter(minhaodb)    // 创建路由器
+	handlerWithCors := service.Cors(r) // 应用 CORS 中间件
 
 	fmt.Println("Starting server at :8080")
 	if err := http.ListenAndServe(":8080", handlerWithCors); err != nil {

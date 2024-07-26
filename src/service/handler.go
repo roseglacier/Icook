@@ -1,8 +1,8 @@
-package recipes
+package service
 
 import (
-	"database/sql"
 	"encoding/json"
+	"icook/src/minhaodb"
 	"net/http"
 )
 
@@ -35,9 +35,8 @@ func Cors(next http.Handler) http.Handler {
 }
 
 // 《GET》，从数据库里随机推荐每天的食谱
-func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	query := "SELECT id , name , cover_image , video_link FROM recipes ORDER BY RAND() LIMIT 3"
-	rows, err := db.Query(query)
+func GetEveryDayRecipes(minhaodb *minhaodb.MinhaoDB, w http.ResponseWriter, r *http.Request) {
+	rows, err := minhaodb.QueryWrapper(getEveryDayRecipes_x3)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -62,10 +61,9 @@ func GetEveryDayRecipes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 }
 
 // 《GET》，根据名字来搜索菜谱
-func GetRecipesByName(db *sql.DB, name string) ([]Recipe, error) {
+func GetRecipesByName(minhaodb *minhaodb.MinhaoDB, name string) ([]Recipe, error) {
 	var recipes []Recipe
-	query := "SELECT id, name, cover_image, video_link FROM recipes WHERE name LIKE ?"
-	rows, err := db.Query(query, "%"+name+"%")
+	rows, err := minhaodb.QueryWrapper(getRecipesByName, "%"+name+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +85,6 @@ func GetRecipesByName(db *sql.DB, name string) ([]Recipe, error) {
 }
 
 // 《POST》 ToDo 从前端添加数据到数据库
-func CreateRecipe(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func CreateRecipe(minhaodb *minhaodb.MinhaoDB, w http.ResponseWriter, r *http.Request) {
 
 }

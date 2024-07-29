@@ -58,4 +58,20 @@
         
         -- 启用外键检查
         SET foreign_key_checks = 1;
+////////////
 
+        LOAD DATA INFILE 'tags.csv'
+        INTO TABLE tags
+        FIELDS TERMINATED BY ',' 
+        ENCLOSED BY '"'
+        LINES TERMINATED BY '\r\n'
+        IGNORE 1 ROWS
+        (id, name);
+
+        LOAD DATA INFILE 'recipe_tags.csv'
+        INTO TABLE recipe_tags
+        FIELDS TERMINATED BY ',' 
+        ENCLOSED BY '"'
+        LINES TERMINATED BY '\r\n'
+        IGNORE 1 ROWS
+        (recipe_id, tag_id);

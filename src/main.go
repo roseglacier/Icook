@@ -11,6 +11,21 @@ import (
 )
 
 func Controller(router *mux.Router, serverMachine *server.Server) {
+	// 注册处理函数0
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+
+		errorMessage := map[string]string{"error": "invaild url", "url": r.URL.Path}
+		response, err := json.Marshal(errorMessage)
+		if err != nil {
+			http.Error(w, "Error encoding error response", http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(response)
+
+	}).Methods(http.MethodPost)
 
 	// 注册处理函数1
 	router.HandleFunc("/api/GetEveryDayRecipes", func(w http.ResponseWriter, r *http.Request) {

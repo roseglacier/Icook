@@ -75,3 +75,6 @@
         LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (recipe_id, tag_id);
+$env:GOOS="linux"
+$env:GOARCH="amd64"
+go build -o icook_linux main.go

@@ -1,61 +1,16 @@
+// icook/src/main.go
+
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"icook/src/database"
 	"icook/src/server"
+	"icook/src/controller"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
-
-func Controller(router *mux.Router, serverMachine *server.Server) {
-	// 注册处理函数0
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(404)
-
-		errorMessage := map[string]string{"error": "invaild url", "url": r.URL.Path}
-		response, err := json.Marshal(errorMessage)
-		if err != nil {
-			http.Error(w, "Error encoding error response", http.StatusInternalServerError)
-			return
-		}
-
-		w.Write(response)
-
-	}).Methods(http.MethodPost)
-
-	// 注册处理函数1
-	router.HandleFunc("/api/GetEveryDayRecipes", func(w http.ResponseWriter, r *http.Request) {
-		var args server.GetEveryDayRecipesArgs
-		err := json.NewDecoder(r.Body).Decode(&args)
-		if err != nil {
-			http.Error(w, "Unable to parse request body", http.StatusBadRequest)
-			return
-		}
-		// 获取菜谱数据
-		result := serverMachine.GetEveryDayRecipes(args)
-
-		// 将结果编码为 JSON
-		response, err := json.Marshal(result)
-		if err != nil {
-			http.Error(w, "Error encoding response", http.StatusInternalServerError)
-			return
-		}
-
-		// 设置响应头并写入响应体
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(response)
-
-	}).Methods(http.MethodPost)
-
-	// 注册处理函数2
-	router.HandleFunc("/api/GetRecipesByName", func(w http.ResponseWriter, r *http.Request) {
-
-	}).Methods(http.MethodPost)
-}
 
 func CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -75,20 +30,19 @@ func CorsMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
-
-	//DB
+	// DB
 	db, err := database.NewDatabase()
 	if err != nil {
 		fmt.Println("start DB failed ", err)
 		return
 	}
 
-	//server
+	// server
 	serverMachine := server.NewServer(db)
 
-	// http handeler
+	// http handler
 	router := mux.NewRouter()
-	Controller(router, serverMachine)
+	controller.Controller(router, serverMachine) // 调用Controller函数
 	handler := CorsMiddleware(router)
 
 	// 启动服务器
@@ -98,5 +52,4 @@ func main() {
 	if err != nil {
 		fmt.Printf("start server failed: %v\n", err)
 	}
-
 }
